@@ -12,7 +12,17 @@ def load_data(input_text_file):
     return data
 
 def lookup_seeds(data):
-    seeds = data[0].split()[1:]
+    seeds = []
+    range_values = data[0].split()[1:]
+    for a, range_value in enumerate(range_values):
+        range_values[a] = int(range_value)
+    for i, value in enumerate(range_values):
+        i = int(i)
+        if i % 2 == 0:
+            for seed_value in range(range_values[i], range_values[i]+range_values[i+1]):
+                seeds.append(seed_value)
+        else:
+            continue
     return seeds
 
 def parse_almanac_to_maps(data):
@@ -78,10 +88,10 @@ if __name__ == '__main__':
     answer = min(initial_seed_locations)
 
     if input_text_file == "sample.txt":
-        assert answer == 35
+        assert answer == 46
 
     print(f"{answer=}")
 
     #store answer as a comment
     #
-    #650599855
+    #
