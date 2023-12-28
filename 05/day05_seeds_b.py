@@ -1,3 +1,4 @@
+import time
 from re import match
 from re import sub
 
@@ -74,6 +75,7 @@ def follow_map(A, initial_value, maps):
 
 if __name__ == '__main__':
 
+    tic = time.perf_counter()
     data = load_data(input_text_file)
 
     #parse almanac to list of seeds and maps
@@ -99,9 +101,10 @@ if __name__ == '__main__':
         assert len(initial_seed_locations) == 27
         assert answer == 46
 
-
+    toc = time.perf_counter()
 
     print(f"{answer=}")
+    print(f"Solution in: {toc - tic:0.4f} seconds")
 
     #store answer as a comment
     #
