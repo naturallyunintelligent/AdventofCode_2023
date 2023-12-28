@@ -2,6 +2,7 @@ from re import match
 from re import sub
 
 #input_text_file = "sample.txt"
+#input_text_file = "input_first_line.txt"
 input_text_file = "input.txt"
 
 def load_data(input_text_file):
@@ -11,7 +12,7 @@ def load_data(input_text_file):
             data.append(line.strip())
     return data
 
-def lookup_seeds(data):
+def find_next_seed(data):
     seeds = []
     range_values = data[0].split()[1:]
     for a, range_value in enumerate(range_values):
@@ -20,10 +21,12 @@ def lookup_seeds(data):
         i = int(i)
         if i % 2 == 0:
             for seed_value in range(range_values[i], range_values[i]+range_values[i+1]):
-                seeds.append(seed_value)
+                #seeds.append(seed_value)
+                yield seed_value
         else:
             continue
-    return seeds
+    yield False
+
 
 def parse_almanac_to_maps(data):
     maps = {}
@@ -74,21 +77,29 @@ if __name__ == '__main__':
     data = load_data(input_text_file)
 
     #parse almanac to list of seeds and maps
-    seeds = lookup_seeds(data)
+    #seeds = lookup_seeds(data)
     maps = parse_almanac_to_maps(data)
     initial_seed_locations = []
-    for seed_value in seeds:
+    seed_gen = find_next_seed(data)
+
+    for seed_value in seed_gen:
         #     map through to location
+        if seed_value == False:
+            continue
         A = 'seed'
         #for map in maps:
         B, final_value = follow_map(A, seed_value, maps)
         assert B == 'location'
         #     append to the initial locations list
         initial_seed_locations.append(final_value)
+        #seed_value = next(seed_value)
     answer = min(initial_seed_locations)
 
     if input_text_file == "sample.txt":
+        assert len(initial_seed_locations) == 27
         assert answer == 46
+
+
 
     print(f"{answer=}")
 
