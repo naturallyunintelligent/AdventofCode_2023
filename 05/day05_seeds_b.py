@@ -2,9 +2,9 @@ import time
 from re import match
 from re import sub
 
-#input_text_file = "sample.txt"
+input_text_file = "sample.txt"
 #input_text_file = "input_first_line.txt"
-input_text_file = "input.txt"
+#input_text_file = "input.txt"
 
 def load_data(input_text_file):
     print("load_data...")
@@ -52,20 +52,20 @@ def parse_almanac_to_maps(data):
     return maps
 
 def lookup_map_final_value(initial_value, map_values):
-    print("lookup_map_final_value...")
+    #print("lookup_map_final_value...")
     for row in map_values:
         row_values = row.split()
         if initial_value in range(int(row_values[1]), int(row_values[1]) + int(row_values[2])):
             final_value = int(row_values[0]) + (initial_value - int(row_values[1]))
             return final_value
     final_value = initial_value
-    print(f"...lookup_map_final_value {final_value}")
+    #print(f"...lookup_map_final_value {final_value}")
     return final_value
 
 def extract_name_B(key):
-    print("extract_name_B...")
+    #print("extract_name_B...")
     name = key.split('-')
-    print("...extract_name_B")
+    #print("...extract_name_B")
     return name[2].split()[0]
 
 def follow_map(A, initial_value, maps):
@@ -75,6 +75,7 @@ def follow_map(A, initial_value, maps):
 
     for map in maps:
         if match(A, map):
+            print(f"matched {A}, map: {map}")
             final_value = lookup_map_final_value(int(initial_value), maps[map])
             B = extract_name_B(map)
             A = B
@@ -110,10 +111,10 @@ if __name__ == '__main__':
         #seed_value = next(seed_value)
         if min_seed_location == 0:
             min_seed_location = final_value
-            print(f"min_seed_location set as: {min_seed_location}")
+            print(f">>>min_seed_location set as: {min_seed_location}")
         elif final_value < min_seed_location:
             min_seed_location = final_value
-            print(f"New min_seed_location set as: {min_seed_location}")
+            print(f">>>New min_seed_location set as: {min_seed_location}")
 
     #answer = min(initial_seed_locations)
     answer = min_seed_location
