@@ -2,9 +2,9 @@ import time
 from re import match
 from re import sub
 
-input_text_file = "sample.txt"
+#input_text_file = "sample.txt"
 #input_text_file = "input_first_line.txt"
-#input_text_file = "input.txt"
+input_text_file = "input.txt"
 
 def load_data(input_text_file):
     print("load_data...")
@@ -47,16 +47,17 @@ def parse_almanac_to_maps(data):
             maps[line[:-1]] = []
             current_map_name = line[:-1]
         else:
-            maps[current_map_name].append(line)
+            row_values = line.split()
+            maps[current_map_name].append(row_values)
     print(f"...parse_almanac_to_maps {maps}")
     return maps
 
 def lookup_map_final_value(initial_value, map_values):
     #print("lookup_map_final_value...")
     for row in map_values:
-        row_values = row.split()
-        if initial_value in range(int(row_values[1]), int(row_values[1]) + int(row_values[2])):
-            final_value = int(row_values[0]) + (initial_value - int(row_values[1]))
+        #row_values = row.split()
+        if initial_value in range(int(row[1]), int(row[1]) + int(row[2])):
+            final_value = int(row[0]) + (initial_value - int(row[1]))
             return final_value
     final_value = initial_value
     #print(f"...lookup_map_final_value {final_value}")
