@@ -6,6 +6,15 @@ from re import sub
 #input_text_file = "input_first_line.txt"
 input_text_file = "input.txt"
 
+class Map:
+    def __init__(self, source_name, dest_name):
+        self.source_name = source_name
+        self.dest_name = dest_name
+        self.map_locations = []
+
+
+
+
 def load_data(input_text_file):
     print("load_data...")
     with open(input_text_file) as input_file:
@@ -36,7 +45,9 @@ def find_next_seed(data):
 
 def parse_almanac_to_maps(data):
     print("parse_almanac_to_maps...")
+    # Dictionary to store maps
     maps = {}
+
     current_map_name = ''
     for line in data:
         if match('seeds:', line):
@@ -46,30 +57,42 @@ def parse_almanac_to_maps(data):
         elif match('\S+ map:', line):
             maps[line[:-1]] = []
             current_map_name = line[:-1]
+
+
+
+            name = current_map_name.split('-')
+            source_name = name[0]
+            dest_name = name[2].split()[0]
+
+
+            # Dynamically create an instance of the class
+            new_instance = Map(source_name, dest_name)
+
+            # Store the instance in the dictionary with the lookup value as the key
+            maps[current_map_name] = new_instance
+
+            # Access the value attribute of the instance using the lookup value
+            print(maps[current_map_name].source_name)
+            print(maps[current_map_name].dest_name)
         else:
             row_values = line.split()
-            maps[current_map_name].append(row_values)
+            maps[current_map_name].map_locations.append(row_values)
+
     print(f"...parse_almanac_to_maps {maps}")
     return maps
 
-def lookup_map_final_value(initial_value, map_values):
+def lookup_map_next_value(initial_value, map_values):
     #print("lookup_map_final_value...")
-    for row in map_values:
-        #row_values = row.split()
+    for row in map_values.map_locations:
+
         if initial_value in range(int(row[1]), int(row[1]) + int(row[2])):
-            final_value = int(row[0]) + (initial_value - int(row[1]))
-            return final_value
-    final_value = initial_value
-    #print(f"...lookup_map_final_value {final_value}")
-    return final_value
+            next_value = int(row[0]) + (initial_value - int(row[1]))
+            return next_value
+    next_value = initial_value
+    print(f"...lookup_map_final_value {next_value}")
+    return next_value
 
-def extract_name_B(key):
-    #print("extract_name_B...")
-    name = key.split('-')
-    #print("...extract_name_B")
-    return name[2].split()[0]
-
-def follow_map(A, initial_value, maps):
+def follow_maps(A, initial_value, maps):
     print("follow_map...")
 
     B = ''
@@ -77,15 +100,15 @@ def follow_map(A, initial_value, maps):
     for map in maps:
         if match(A, map):
             print(f"matched {A}, map: {map}")
-            final_value = lookup_map_final_value(int(initial_value), maps[map])
-            B = extract_name_B(map)
-            A = B
-            initial_value = final_value
+            next_value = lookup_map_next_value(int(initial_value), maps[map])
+
+            A = maps[map].dest_name
+            initial_value = next_value
         else:
-            final_value = 'huh?'
-            B = 'errrrr'
-    print(f"...follow_map {B}, {final_value}")
-    return B, final_value
+            print(f"something wrong, no match")
+    B = maps[map].dest_name
+    print(f"...follow_map {B}, {next_value}")
+    return B, next_value
 
 
 if __name__ == '__main__':
@@ -93,23 +116,25 @@ if __name__ == '__main__':
     tic = time.perf_counter()
     data = load_data(input_text_file)
 
-    #parse almanac to list of seeds and maps
-    #seeds = lookup_seeds(data)
+    #parse almanac to list of maps
     maps = parse_almanac_to_maps(data)
-    initial_seed_locations = []
+
+    #generator to fetch next seed
     seed_gen = find_next_seed(data)
+
+    #initialise
     min_seed_location = 0
+
     for seed_value in seed_gen:
-        #     map through to location
+        #continue until generator has generated a seed
         if seed_value == False:
             continue
+
         A = 'seed'
-        #for map in maps:
-        B, final_value = follow_map(A, seed_value, maps)
+        B, final_value = follow_maps(A, seed_value, maps)
         assert B == 'location'
-        #     append to the initial locations list
-        #initial_seed_locations.append(final_value)
-        #seed_value = next(seed_value)
+
+        #save only min location:
         if min_seed_location == 0:
             min_seed_location = final_value
             print(f">>>min_seed_location set as: {min_seed_location}")
@@ -117,7 +142,6 @@ if __name__ == '__main__':
             min_seed_location = final_value
             print(f">>>New min_seed_location set as: {min_seed_location}")
 
-    #answer = min(initial_seed_locations)
     answer = min_seed_location
 
     if input_text_file == "sample.txt":
