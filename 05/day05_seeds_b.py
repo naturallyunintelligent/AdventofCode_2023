@@ -83,7 +83,7 @@ if __name__ == '__main__':
     maps = parse_almanac_to_maps(data)
     initial_seed_locations = []
     seed_gen = find_next_seed(data)
-
+    min_seed_location = 0
     for seed_value in seed_gen:
         #     map through to location
         if seed_value == False:
@@ -93,12 +93,20 @@ if __name__ == '__main__':
         B, final_value = follow_map(A, seed_value, maps)
         assert B == 'location'
         #     append to the initial locations list
-        initial_seed_locations.append(final_value)
+        #initial_seed_locations.append(final_value)
         #seed_value = next(seed_value)
-    answer = min(initial_seed_locations)
+        if min_seed_location == 0:
+            min_seed_location = final_value
+            print(f"min_seed_location set as: {min_seed_location}")
+        elif final_value < min_seed_location:
+            min_seed_location = final_value
+            print(f"New min_seed_location set as: {min_seed_location}")
+
+    #answer = min(initial_seed_locations)
+    answer = min_seed_location
 
     if input_text_file == "sample.txt":
-        assert len(initial_seed_locations) == 27
+        #assert len(initial_seed_locations) == 27
         assert answer == 46
 
     toc = time.perf_counter()
